@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "image_change_quality_rlbox-debug",
+            "name": "image_change_quality_rlbox_wasm2c-debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build_debug/image_change_quality_rlbox",
+            "program": "${workspaceFolder}/build_wasmdebug/image_change_quality_rlbox_wasm2c",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",
