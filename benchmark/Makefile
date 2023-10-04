@@ -46,7 +46,7 @@ RLBOX_INCLUDES=-I $(ROOT_PATH)/rlbox/code/include -I $(RLBOX_WASM2C_PATH)/includ
 RLBOX_LINK=-lrt
 WASM2C_BUILD_INCLUDES=-I $(WASM2C_SRC_PATH)/wasm2c -I$(REPO_PATH)/build_wasm$(BUILD_TYPE_DIR)/ -DWASM_RT_SKIP_SIGNAL_RECOVERY=1
 
-test_out.jpeg: test.jpeg
+test_out.jpeg: test.jpeg ../build_$(BUILD_TYPE_DIR)/libjpeg.a
 	$(CC) -O0 -g generate_test_out.c -o ./generate_test_out $(LIBJPEG_INCLUDES) $(LIBJPEG_LINK)
 	./generate_test_out test.jpeg test_out.jpeg
 
@@ -60,17 +60,17 @@ test_bytes.h: test.jpeg test_out.jpeg
 
 #####################################
 
-../build_$(BUILD_TYPE_DIR):
-	cmake -S ../ -B $@ -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG)
-	cd $@ && make -j$(PARALLEL_COUNT)
+../build_$(BUILD_TYPE_DIR)/libjpeg.a:
+	cmake -S ../ -B ../build_$(BUILD_TYPE_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DWITH_SIMD=1 -DREQUIRE_SIMD=1
+	cd ../build_$(BUILD_TYPE_DIR) && make -j$(PARALLEL_COUNT)
 
-../build_$(BUILD_TYPE_DIR)/image_change_quality_rlbox_noop: image_change_quality_rlbox.cpp ../build_$(BUILD_TYPE_DIR)
+../build_$(BUILD_TYPE_DIR)/image_change_quality_rlbox_noop: image_change_quality_rlbox.cpp ../build_$(BUILD_TYPE_DIR)/libjpeg.a
 	$(CXX) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $< $(LIBJPEG_INCLUDES) $(RLBOX_INCLUDES) $(LIBJPEG_LINK) $(RLBOX_LINK)
 
 #####################################
 
 ../build_nosimd_$(BUILD_TYPE_DIR):
-	cmake -S ../ -B $@ -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DWITH_SIMD=OFF
+	cmake -S ../ -B $@ -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DWITH_SIMD=0
 	cd $@ && make -j$(PARALLEL_COUNT)
 
 ../build_nosimd_$(BUILD_TYPE_DIR)/image_change_quality_rlbox_noop: image_change_quality_rlbox.cpp ../build_nosimd_$(BUILD_TYPE_DIR)
@@ -87,7 +87,7 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 	CC="$(WASI_CC)" CFLAGS="$(WASI_CFLAGS)" LDFLAGS="$(WASI_LDFLAGS)" \
 		CXX="$(WASI_CXX)" CXXFLAGS="$(WASI_CFLAGS)" LDFLAGS="$(WASI_LDFLAGS)" \
 		AR="$(WASI_AR)" LD="$(WASI_LD)" \
-		cmake -S ../ -B ../build_wasm$(BUILD_TYPE_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DENABLE_SHARED=OFF -DWITH_SIMD=OFF
+		cmake -S ../ -B ../build_wasm$(BUILD_TYPE_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DENABLE_SHARED=0 -DWITH_SIMD=0
 	cd ../build_wasm$(BUILD_TYPE_DIR) && make -j$(PARALLEL_COUNT)
 	$(WASI_CC) $(BUILD_TYPE_FLAGS) $(WASI_CFLAGS) $(WASI_LDFLAGS) -o ../build_wasm$(BUILD_TYPE_DIR)/libjpeg.wasm $(RLBOX_WASM2C_PATH)/c_src/wasm2c_sandbox_wrapper.c $(LIBJPEG_WASM_LINK)
 	$(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c ../build_wasm$(BUILD_TYPE_DIR)/libjpeg.wasm -o ../build_wasm$(BUILD_TYPE_DIR)/libjpeg.wasm.c
