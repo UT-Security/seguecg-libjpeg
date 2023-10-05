@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
-#include <chrono>
+#include <stdbool.h>
 #include <stdio.h>
-
-using namespace std::chrono;
+#include <time.h>
 
 #include "jpeglib.h"
 
@@ -28,7 +27,7 @@ struct jpeg_parsed_data {
 };
 
 struct jpeg_parsed_data read_jpeg(unsigned char *fileBuff, unsigned long fsize) {
-  struct jpeg_parsed_data ret {0};
+  struct jpeg_parsed_data ret = {0};
 
   struct jpeg_decompress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -65,7 +64,7 @@ struct jpeg_parsed_data read_jpeg(unsigned char *fileBuff, unsigned long fsize) 
 }
 
 struct jpeg_parsed_data write_jpeg(int quality, struct jpeg_parsed_data input) {
-  struct jpeg_parsed_data ret {0};
+  struct jpeg_parsed_data ret = {0};
 
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -110,9 +109,12 @@ int main(int argc, char** argv) {
   unsigned long input_size = sizeof(inputData) - 1;
   unsigned long output_size = sizeof(outputData) - 1;
 
-  auto enter_time = high_resolution_clock::now();
+  struct timespec enter_time = { 0 };
+  clock_gettime(CLOCK_REALTIME, &enter_time);
+
   const int test_iterations = 100;
-  struct jpeg_parsed_data in_jpeg_data {0}, out_jpeg_data {0};
+  struct jpeg_parsed_data in_jpeg_data = {0};
+  struct jpeg_parsed_data out_jpeg_data = {0};
 
   for (int i = 0; i < test_iterations; i++) {
     if (in_jpeg_data.image_buffer) {
@@ -125,7 +127,8 @@ int main(int argc, char** argv) {
     out_jpeg_data = write_jpeg(30, in_jpeg_data);
   }
 
-  auto exit_time = high_resolution_clock::now();
+  struct timespec exit_time = { 0 };
+  clock_gettime(CLOCK_REALTIME, &exit_time);
 
   // std::cout << "W" << in_jpeg_data.image_width << " L" << in_jpeg_data.image_height << "\n";
 
@@ -138,7 +141,10 @@ int main(int argc, char** argv) {
     }
   }
 
-  int64_t ns = duration_cast<nanoseconds>(exit_time - enter_time).count();
+  const int64_t nanos = 1000000000;
+  int64_t ns =  (nanos * (exit_time.tv_sec - enter_time.tv_sec))
+    + ((int64_t)(exit_time.tv_nsec - enter_time.tv_nsec));
+
   printf("JPEG recoding time: %lld\n", (long long) (ns / test_iterations));
 
   if (in_jpeg_data.image_buffer) {
