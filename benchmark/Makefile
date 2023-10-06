@@ -112,8 +112,17 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1
 
-../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
-	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_PAGE=1
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right12: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_PAGE=1 -DWASM_RT_MEMCHECK_SHADOW_PAGE_SCHEME=1
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right16_left4: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_PAGE=1 -DWASM_RT_MEMCHECK_SHADOW_PAGE_SCHEME=2
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right12_write: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_PAGE=1 -DWASM_RT_MEMCHECK_SHADOW_PAGE_SCHEME=3
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right16_left4_write: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_PAGE=1 -DWASM_RT_MEMCHECK_SHADOW_PAGE_SCHEME=4
 
 #####################################
 
@@ -141,7 +150,10 @@ build: ../build_$(BUILD_TYPE_DIR)/image_change_quality
 build: ../build_nosimd_$(BUILD_TYPE_DIR)/image_change_quality
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck
-build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right12
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right16_left4
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right12_write
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_right16_left4_write
 
 test_rlbox:
 	echo "JPEG Stock"
@@ -166,9 +178,17 @@ test:
 	echo "JPEG Wasm Bounds checks"
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_boundscheck
 	sleep 1
-	echo "JPEG Wasm Shadow page"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage
-
+	echo "JPEG Wasm Shadow page right 12"
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right12
+	sleep 1
+	echo "JPEG Wasm Shadow page right 16 left 4"
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right16_left4
+	sleep 1
+	echo "JPEG Wasm Shadow page right 12 write"
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right12_write
+	sleep 1
+	echo "JPEG Wasm Shadow page right 16 left 4 write"
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right16_left4_write
 
 clean:
 	rm -f test_out.jpeg
