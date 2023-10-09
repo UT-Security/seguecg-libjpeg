@@ -239,102 +239,70 @@ build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_wat
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch_shadowsegue
 
 test_rlbox:
-	echo "JPEG Stock"
-	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && ./image_change_quality_rlbox_noop
+	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && echo -n "JPEG Stock " && ./image_change_quality_rlbox_noop
 	sleep 1
-	echo "JPEG Stock NoSIMD"
-	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && ./image_change_quality_rlbox_noop
+	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && echo -n "JPEG Stock NoSIMD " && ./image_change_quality_rlbox_noop
 	sleep 1
-	echo "JPEG Wasm"
-	cd $(REPO_PATH)/build_nosimd_wasm_$(BUILD_TYPE_DIR) && ./image_change_quality_rlbox_wasm2c
+	cd $(REPO_PATH)/build_nosimd_wasm_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm " && ./image_change_quality_rlbox_wasm2c
 
 test:
-	echo "JPEG Stock"
-	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && ./image_change_quality
+	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && echo -n "JPEG Stock " && ./image_change_quality
 	sleep 1
-	echo "JPEG Stock NoSIMD"
-	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && ./image_change_quality
+	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && echo -n "JPEG Stock NoSIMD " && ./image_change_quality
 	sleep 1
-	echo "JPEG Wasm Guard pages"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_guardpage
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Guard pages " && ./image_change_quality_wasm2c_guardpage
 	sleep 1
-	echo "JPEG Wasm Guard pages with segue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_guardpage_segue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Guard pages with segue " && ./image_change_quality_wasm2c_guardpage_segue
 	sleep 1
-	echo "JPEG Wasm Bounds checks"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_boundscheck
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Bounds checks " && ./image_change_quality_wasm2c_boundscheck
 	sleep 1
-	echo "JPEG Wasm Shadow page right 12"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right12
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow page right 12 " && ./image_change_quality_wasm2c_shadowpage_right12
 	sleep 1
-	echo "JPEG Wasm Shadow page right 12 shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right12_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow page right 12 shadowsegue " && ./image_change_quality_wasm2c_shadowpage_right12_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow page right 16 left 4"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right16_left4
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow page right 16 left 4 " && ./image_change_quality_wasm2c_shadowpage_right16_left4
 	sleep 1
-	echo "JPEG Wasm Shadow page right 12 write"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right12_write
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow page right 12 write " && ./image_change_quality_wasm2c_shadowpage_right12_write
 	sleep 1
-	echo "JPEG Wasm Shadow page right 12 write shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right12_write_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow page right 12 write shadowsegue " && ./image_change_quality_wasm2c_shadowpage_right12_write_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow page right 16 left 4 write"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowpage_right16_left4_write
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow page right 16 left 4 write " && ./image_change_quality_wasm2c_shadowpage_right16_left4_write
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read4per4gb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read4per4gb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read4per4gb " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read1per4gb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read1per4gb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read1per4gb " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read1per64kb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read1per64kb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read1per64kb " && ./image_change_quality_wasm2c_shadowbytes_read1per64kb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read1per16mb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read1per16mb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read1per16mb " && ./image_change_quality_wasm2c_shadowbytes_read1per16mb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write4per4gb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write4per4gb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write4per4gb " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write1per4gb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write1per4gb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write1per4gb " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write1per64kb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write1per64kb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write1per64kb " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write1per16mb"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write1per16mb
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write1per16mb " && ./image_change_quality_wasm2c_shadowbytes_write1per16mb
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read4per4gb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read1per4gb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read1per64kb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read1per64kb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per64kb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - read1per16mb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_read1per16mb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - read1per16mb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per16mb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write4per4gb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write4per4gb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write1per4gb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write1per4gb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write1per64kb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write1per64kb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm Shadow bytes - write1per16mb shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_shadowbytes_write1per16mb_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm Shadow bytes - write1per16mb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per16mb_shadowsegue
 	sleep 1
-	echo "JPEG Wasm watch"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_watch
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm watch " && ./image_change_quality_wasm2c_watch
 	sleep 1
-	echo "JPEG Wasm watch shadowsegue"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && ./image_change_quality_wasm2c_watch_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "JPEG Wasm watch shadowsegue " && ./image_change_quality_wasm2c_watch_shadowsegue
 
 clean:
 	rm -f test_out.jpeg
