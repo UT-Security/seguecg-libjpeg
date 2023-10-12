@@ -3,6 +3,7 @@
         "*.fst": "ocaml",
         "*.fsti": "ocaml",
         "chrono": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "libjpeg.wasm.h": "c"
     }
 }
