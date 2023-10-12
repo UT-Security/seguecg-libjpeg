@@ -330,9 +330,9 @@ test:
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Shadow bytes - read4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Shadow bytes - read1per4gb shadowsegue spectre" && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue_spectre
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Shadow bytes - read1per4gb shadowsegue spectre " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue_spectre
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Shadow bytes - read4per4gb shadowsegue spectre" && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue_spectre
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Shadow bytes - read4per4gb shadowsegue spectre " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue_spectre
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Shadow bytes - write1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb_shadowsegue
 	sleep 1
