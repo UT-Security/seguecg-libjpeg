@@ -115,11 +115,14 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1
 
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_spectre: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1 -DWASM_RT_SPECTREMASK=1
+
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_asm: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK_ASM=1
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_asm_spectre: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
-	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK_ASM=1 -DWASM_RT_SPECTREMASK=1
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK_ASM=1
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_read: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_PAGE=1 -DWASM_RT_MEMCHECK_SHADOW_PAGE_SCHEME=1
@@ -234,6 +237,7 @@ build: ../build_nosimd_$(BUILD_TYPE_DIR)/image_change_quality
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage_segue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_spectre
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_asm
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_asm_spectre
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowpage_read
@@ -283,6 +287,8 @@ test:
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Guard pages with segue " && ./image_change_quality_wasm2c_guardpage_segue
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Bounds checks " && ./image_change_quality_wasm2c_boundscheck
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Bounds checks spectre " && ./image_change_quality_wasm2c_boundscheck_spectre
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm Bounds checks asm " && ./image_change_quality_wasm2c_boundscheck_asm
 	sleep 1
