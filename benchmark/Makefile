@@ -205,6 +205,21 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytes_write1per16mb_shadowsegue: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_BYTES=1 -DWASM_RT_MEMCHECK_SHADOW_BYTES_SCHEME=8 -DWASM_RT_USE_SHADOW_SEGUE=1 -mfsgsbase
 
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_PRESHADOW_BYTES=1
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_PRESHADOW_BYTES=1 -DWASM_RT_USE_SEGUE=1 -mfsgsbase
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_shadowsegue: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_PRESHADOW_BYTES=1 -DWASM_RT_USE_SHADOW_SEGUE=1 -mfsgsbase
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_PRESHADOW_BYTES=1  -DWASM_RT_USE_SEGUE=1 -DWASM_RT_USE_SHADOW_SEGUE=1 -mfsgsbase
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue_spectre: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_PRESHADOW_BYTES=1  -DWASM_RT_USE_SEGUE=1 -DWASM_RT_USE_SHADOW_SEGUE=1 -mfsgsbase -DWASM_RT_SPECTREMASK=1
+
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_DEBUG_WATCH=1
 
@@ -281,6 +296,11 @@ build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_sha
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytes_write1per4gb_shadowsegue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytes_write1per64kb_shadowsegue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytes_write1per16mb_shadowsegue
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_shadowsegue
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue_spectre
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch_shadowsegue
 
@@ -367,6 +387,16 @@ test:
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb_shadowsegue
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb segue " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb shadowsegue " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb segue shadowsegue " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb segue shadowsegue spectre " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue_spectre
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c watch " && ./image_change_quality_wasm2c_watch
 	sleep 1

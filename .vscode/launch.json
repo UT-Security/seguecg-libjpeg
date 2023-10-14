@@ -100,5 +100,29 @@
                 }
             ]
         },
+        {
+            "name": "image_change_quality_wasm2c_preshadowbytes_read1per4gb-debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build_nosimd_wasm_sa_debug/image_change_quality_wasm2c_preshadowbytes_read1per4gb",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description":  "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
     ]
 }
