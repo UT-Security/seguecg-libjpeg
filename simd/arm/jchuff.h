@@ -74,7 +74,7 @@ typedef struct {
 
 #else
 
-#if defined(_MSC_VER) && !defined(__clang__)
+#if (defined(_MSC_VER) && !defined(__clang__)) || defined(__wasm__) || defined(__wasm)
 #define SPLAT() { \
   buffer[0] = (JOCTET)(put_buffer >> 24); \
   buffer[1] = (JOCTET)(put_buffer >> 16); \

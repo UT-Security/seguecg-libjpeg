@@ -224,7 +224,10 @@ elseif(CPU_TYPE STREQUAL "arm64" OR CPU_TYPE STREQUAL "arm")
 # following test determines whether -mfloat-abi=softfp should be explicitly
 # added to the compile flags for the intrinsics implementation of the Neon SIMD
 # extensions.
+
 if(BITS EQUAL 32)
+  if (NOT IS_WASM_BUILD)
+
   check_c_source_compiles("
     #if defined(__ARM_NEON__) || (!defined(__linux__) && !defined(ANDROID) && !defined(__ANDROID__))
     #error \"Neon run-time auto-detection will not be used\"
@@ -238,6 +241,8 @@ if(BITS EQUAL 32)
     int main(void) { return 0; }" NEED_SOFTFP_FOR_INTRINSICS)
   if(NEED_SOFTFP_FOR_INTRINSICS)
     set(SOFTFP_FLAG -mfloat-abi=softfp)
+  endif()
+
   endif()
 endif()
 
