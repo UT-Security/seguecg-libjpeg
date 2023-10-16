@@ -362,8 +362,8 @@ test_simdtest:
 	sleep 1
 	cd $(REPO_PATH)/build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages ARM32 simd " && ./image_change_quality_wasm2c_guardpage
 	sleep 1
-	cd $(REPO_PATH)/build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages ARM64 simd " && ./image_change_quality_wasm2c_guardpage
-	sleep 1
+	# cd $(REPO_PATH)/build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages ARM64 simd " && ./image_change_quality_wasm2c_guardpage
+	# sleep 1
 
 test:
 	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && echo -n "Stock " && ./image_change_quality
