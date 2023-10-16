@@ -225,7 +225,15 @@ elseif(CPU_TYPE STREQUAL "arm64" OR CPU_TYPE STREQUAL "arm")
 # added to the compile flags for the intrinsics implementation of the Neon SIMD
 # extensions.
 
-if(BITS EQUAL 32)
+if (IS_WASM_BUILD AND CPU_TYPE STREQUAL "arm64")
+set(EFFECTIVE_BITS 64)
+elseif (IS_WASM_BUILD AND CPU_TYPE STREQUAL "arm")
+set(EFFECTIVE_BITS 32)
+else()
+set(EFFECTIVE_BITS ${BITS})
+endif()
+
+if(EFFECTIVE_BITS EQUAL 32)
   if (NOT IS_WASM_BUILD)
 
   check_c_source_compiles("
@@ -246,7 +254,7 @@ if(BITS EQUAL 32)
   endif()
 endif()
 
-if(BITS EQUAL 32)
+if(EFFECTIVE_BITS EQUAL 32)
   set(CMAKE_REQUIRED_FLAGS "-mfpu=neon ${SOFTFP_FLAG}")
   check_c_source_compiles("
     #include <arm_neon.h>
@@ -308,7 +316,7 @@ check_c_source_compiles("
     vst4q_u8(input, output);
     return (int)input[0];
   }" HAVE_VLD1Q_U8_X4)
-if(BITS EQUAL 32)
+if(EFFECTIVE_BITS EQUAL 32)
   unset(CMAKE_REQUIRED_FLAGS)
 endif()
 configure_file(arm/neon-compat.h.in arm/neon-compat.h @ONLY)
@@ -379,14 +387,14 @@ set(SIMD_SOURCES arm/jcgray-neon.c arm/jcphuff-neon.c arm/jcsample-neon.c
 if(NEON_INTRINSICS)
   set(SIMD_SOURCES ${SIMD_SOURCES} arm/jccolor-neon.c arm/jidctint-neon.c)
 endif()
-if(NEON_INTRINSICS OR BITS EQUAL 64)
+if(NEON_INTRINSICS OR EFFECTIVE_BITS EQUAL 64)
   set(SIMD_SOURCES ${SIMD_SOURCES} arm/jidctfst-neon.c)
 endif()
-if(NEON_INTRINSICS OR BITS EQUAL 32)
-  set(SIMD_SOURCES ${SIMD_SOURCES} arm/aarch${BITS}/jchuff-neon.c
+if(NEON_INTRINSICS OR EFFECTIVE_BITS EQUAL 32)
+  set(SIMD_SOURCES ${SIMD_SOURCES} arm/aarch${EFFECTIVE_BITS}/jchuff-neon.c
     arm/jdcolor-neon.c arm/jfdctint-neon.c)
 endif()
-if(BITS EQUAL 32)
+if(EFFECTIVE_BITS EQUAL 32)
   set_source_files_properties(${SIMD_SOURCES} COMPILE_FLAGS "-mfpu=neon ${SOFTFP_FLAG}")
 endif()
 if(NOT NEON_INTRINSICS)
@@ -394,10 +402,10 @@ if(NOT NEON_INTRINSICS)
   set(EFFECTIVE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${CMAKE_ASM_FLAGS_${CMAKE_BUILD_TYPE_UC}}")
   message(STATUS "CMAKE_ASM_FLAGS = ${EFFECTIVE_ASM_FLAGS}")
 
-  set(SIMD_SOURCES ${SIMD_SOURCES} arm/aarch${BITS}/jsimd_neon.S)
+  set(SIMD_SOURCES ${SIMD_SOURCES} arm/aarch${EFFECTIVE_BITS}/jsimd_neon.S)
 endif()
 
-add_library(simd OBJECT ${SIMD_SOURCES} arm/aarch${BITS}/jsimd.c)
+add_library(simd OBJECT ${SIMD_SOURCES} arm/aarch${EFFECTIVE_BITS}/jsimd.c)
 
 if(CMAKE_POSITION_INDEPENDENT_CODE OR ENABLE_SHARED)
   set_target_properties(simd PROPERTIES POSITION_INDEPENDENT_CODE 1)

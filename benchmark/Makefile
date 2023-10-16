@@ -46,16 +46,19 @@ LIBJPEG_NOSIMD_INCLUDES=-I$(REPO_PATH)/ -I$(REPO_PATH)/build_nosimd_$(BUILD_TYPE
 LIBJPEG_NOSIMD_WASM_INCLUDES=-I$(REPO_PATH)/ -I$(REPO_PATH)/build_nosimd_wasm_$(BUILD_TYPE_DIR)
 LIBJPEG_NOSIMD_WASM_SA_INCLUDES=-I$(REPO_PATH)/ -I$(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)
 LIBJPEG_ARM32SIMD_WASM_SA_INCLUDES=-I$(REPO_PATH)/ -I$(REPO_PATH)/build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)
+LIBJPEG_ARM64SIMD_WASM_SA_INCLUDES=-I$(REPO_PATH)/ -I$(REPO_PATH)/build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)
 LIBJPEG_LINK=$(REPO_PATH)/build_$(BUILD_TYPE_DIR)/libjpeg.a
 LIBJPEG_NOSIMD_LINK=$(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR)/libjpeg.a
 LIBJPEG_NOSIMD_WASM_LINK=-Wl,--whole-archive $(REPO_PATH)/build_nosimd_wasm_$(BUILD_TYPE_DIR)/libjpeg.a -Wl,--no-whole-archive
 LIBJPEG_NOSIMD_WASM_SA_LINK=-Wl,--whole-archive $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.a -Wl,--no-whole-archive
 LIBJPEG_ARM32SIMD_WASM_SA_LINK=-Wl,--whole-archive $(REPO_PATH)/build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.a -Wl,--no-whole-archive
+LIBJPEG_ARM64SIMD_WASM_SA_LINK=-Wl,--whole-archive $(REPO_PATH)/build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.a -Wl,--no-whole-archive
 RLBOX_INCLUDES=-I $(ROOT_PATH)/rlbox/code/include -I $(RLBOX_WASM2C_PATH)/include -DRLBOX_WASM2C_MODULE_NAME=libjpeg
 RLBOX_LINK=-lrt
 WASM2C_BUILD_INCLUDES=-I $(WASM2C_SRC_PATH)/wasm2c -I$(REPO_PATH)/build_nosimd_wasm_$(BUILD_TYPE_DIR)/ -DWASM_RT_SKIP_SIGNAL_RECOVERY=1 -DWASM_RT_USE_STACK_DEPTH_COUNT=0
 WASM2C_NOSIMD_SA_BUILD_INCLUDES=-I $(WASM2C_SRC_PATH)/wasm2c -I$(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/ -DWASM_RT_SKIP_SIGNAL_RECOVERY=1 -DWASM_RT_USE_STACK_DEPTH_COUNT=0
 WASM2C_ARM32SIMD_SA_BUILD_INCLUDES=-I $(WASM2C_SRC_PATH)/wasm2c -I$(REPO_PATH)/build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/ -DWASM_RT_SKIP_SIGNAL_RECOVERY=1 -DWASM_RT_USE_STACK_DEPTH_COUNT=0 -I$(WASM2C_SRC_PATH)/third_party/simde/
+WASM2C_ARM64SIMD_SA_BUILD_INCLUDES=-I $(WASM2C_SRC_PATH)/wasm2c -I$(REPO_PATH)/build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/ -DWASM_RT_SKIP_SIGNAL_RECOVERY=1 -DWASM_RT_USE_STACK_DEPTH_COUNT=0 -I$(WASM2C_SRC_PATH)/third_party/simde/
 
 ################Deps#####################
 
@@ -104,9 +107,6 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 	$(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm -o ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 
 ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c: $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c image_change_quality.c
-	# mkdir -p ../build_wasm_sa_$(BUILD_TYPE_DIR)/
-	# cp -u ./wasmjpegconfig/* ../build_wasm_sa_$(BUILD_TYPE_DIR)/
-	# rm -rf ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)
 	CC="$(WASI_CC)" CFLAGS="$(WASI_CFLAGS) $(SIMDE_CFLAGS)" LDFLAGS="$(WASI_SA_LDFLAGS)" \
 		CXX="$(WASI_CXX)" CXXFLAGS="$(WASI_CFLAGS) $(SIMDE_CFLAGS)" LDFLAGS="$(WASI_SA_LDFLAGS)" \
 		AR="$(WASI_AR)" LD="$(WASI_LD)" \
@@ -114,6 +114,15 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 	cd ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR) && make -j$(PARALLEL_COUNT)
 	$(WASI_CC) $(BUILD_TYPE_FLAGS) $(WASI_CFLAGS) $(WASI_SA_LDFLAGS) -o ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm image_change_quality.c $(LIBJPEG_ARM32SIMD_WASM_SA_INCLUDES) $(LIBJPEG_ARM32SIMD_WASM_SA_LINK)
 	$(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm -o ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+
+../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c: $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c image_change_quality.c
+	CC="$(WASI_CC)" CFLAGS="$(WASI_CFLAGS) $(SIMDE_CFLAGS)" LDFLAGS="$(WASI_SA_LDFLAGS)" \
+		CXX="$(WASI_CXX)" CXXFLAGS="$(WASI_CFLAGS) $(SIMDE_CFLAGS)" LDFLAGS="$(WASI_SA_LDFLAGS)" \
+		AR="$(WASI_AR)" LD="$(WASI_LD)" \
+		cmake -S ../ -B ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DENABLE_SHARED=0 -DWITH_SIMD=1 -DREQUIRE_SIMD=1 -DNEON_INTRINSICS=1 -DCPU_TYPE="arm64" -DIS_WASM_BUILD=1
+	cd ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR) && make -j$(PARALLEL_COUNT)
+	$(WASI_CC) $(BUILD_TYPE_FLAGS) $(WASI_CFLAGS) $(WASI_SA_LDFLAGS) -o ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm image_change_quality.c $(LIBJPEG_ARM64SIMD_WASM_SA_INCLUDES) $(LIBJPEG_ARM64SIMD_WASM_SA_LINK)
+	$(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm -o ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 
 #####################################
 
@@ -250,6 +259,9 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c:
 ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_ARM32SIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_GUARD_PAGES=1
 
+../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_ARM32SIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_GUARD_PAGES=1
+
 #####################################
 
 ../build_$(BUILD_TYPE_DIR)/image_change_quality_rlbox_noop: image_change_quality_rlbox.cpp ../build_$(BUILD_TYPE_DIR)/libjpeg.a
@@ -288,7 +300,6 @@ build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_g
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_boundscheck.cwasm
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_boundscheck_spectre.cwasm
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage
-build: ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage_segue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_spectre
@@ -329,12 +340,30 @@ build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_pre
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch_shadowsegue
 
+build_simdtest: test_bytes.h
+build_simdtest: ../build_$(BUILD_TYPE_DIR)/image_change_quality
+build_simdtest: ../build_nosimd_$(BUILD_TYPE_DIR)/image_change_quality
+build_simdtest: ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage
+build_simdtest: ../build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage
+
 test_rlbox:
 	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && echo -n "Stock " && ./image_change_quality_rlbox_noop
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && echo -n "Stock NoSIMD " && ./image_change_quality_rlbox_noop
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_$(BUILD_TYPE_DIR) && echo -n "Wasm2c " && ./image_change_quality_rlbox_wasm2c
+
+test_simdtest:
+	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && echo -n "Stock " && ./image_change_quality
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && echo -n "Stock NoSIMD " && ./image_change_quality
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages " && ./image_change_quality_wasm2c_guardpage
+	sleep 1
+	cd $(REPO_PATH)/build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages ARM32 simd " && ./image_change_quality_wasm2c_guardpage
+	sleep 1
+	cd $(REPO_PATH)/build_arm64simd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages ARM64 simd " && ./image_change_quality_wasm2c_guardpage
+	sleep 1
 
 test:
 	cd $(REPO_PATH)/build_$(BUILD_TYPE_DIR) && echo -n "Stock " && ./image_change_quality
@@ -348,8 +377,6 @@ test:
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks spectre " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck_spectre.cwasm
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages " && ./image_change_quality_wasm2c_guardpage
-	sleep 1
-	cd $(REPO_PATH)/build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages ARM32 simd " && ./image_change_quality_wasm2c_guardpage
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages with segue " && ./image_change_quality_wasm2c_guardpage_segue
 	sleep 1
