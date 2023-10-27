@@ -109,6 +109,15 @@ int main(int argc, char** argv) {
   unsigned long input_size = sizeof(inputData) - 1;
   unsigned long output_size = sizeof(outputData) - 1;
 
+  struct timespec warmup_time = { 0 };
+  for(int i = 0; i < 10; i++) {
+    clock_gettime(CLOCK_REALTIME, &warmup_time);
+    if(warmup_time.tv_nsec == 0 && warmup_time.tv_sec == 0) {
+      printf("Clock not working\n");
+      exit(1);
+    }
+  }
+
   struct timespec enter_time = { 0 };
   clock_gettime(CLOCK_REALTIME, &enter_time);
 
