@@ -10,8 +10,8 @@ REPO_PATH=$(MKFILE_DIR)/..
 ROOT_PATH=$(REPO_PATH)/..
 PARALLEL_COUNT=$(shell nproc)
 
-CC=clang
-CXX=clang++ -std=c++17
+CC=gcc
+CXX=g++ -std=c++17
 WASI_SDK_PATH=$(ROOT_PATH)/wasi-sdk
 WASI_CC=$(WASI_SDK_PATH)/bin/clang --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot/
 WASI_CXX=$(WASI_SDK_PATH)/bin/clang++ --sysroot $(WASI_SDK_PATH)/share/wasi-sysroot/ -std=c++17
@@ -263,6 +263,12 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c: $(WASM2C_SRC_PATH)/src/templa
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone_shadowsegue: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_NOSIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_BYTES_TAG=1 -DWASM_RT_MEMCHECK_SHADOW_BYTES_TAG_SCHEME=1 -DWASM_RT_USE_SHADOW_SEGUE=1 -mfsgsbase
 
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_NOSIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_BYTES_TAG=1 -DWASM_RT_MEMCHECK_SHADOW_BYTES_TAG_SCHEME=2
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned_shadowsegue: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_NOSIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_SHADOW_BYTES_TAG=1 -DWASM_RT_MEMCHECK_SHADOW_BYTES_TAG_SCHEME=2 -DWASM_RT_USE_SHADOW_SEGUE=1 -mfsgsbase
+
 #####################################
 
 ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage: image_change_quality.c  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_arm32simd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
@@ -350,6 +356,8 @@ build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_wat
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_watch_shadowsegue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone_shadowsegue
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned_shadowsegue
 
 build_mpx: test_bytes.h
 build_mpx: ../build_nosimd_$(BUILD_TYPE_DIR)/image_change_quality
@@ -486,6 +494,10 @@ test:
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag " && ./image_change_quality_wasm2c_shadowbytestag_floatzone
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag shadowsegue " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag virtpinned " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag virtpinned shadowsegue " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned_shadowsegue
 
 clean:
 	rm -f test_out.jpeg
