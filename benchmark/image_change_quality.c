@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -103,6 +104,11 @@ struct jpeg_parsed_data write_jpeg(int quality, struct jpeg_parsed_data input) {
   jpeg_destroy_compress(&cinfo);
 
   return ret;
+}
+
+__attribute__((used, noinline))
+uint32_t pointer_deref(uint32_t* ptr) {
+  return *ptr;
 }
 
 int main(int argc, char** argv) {
