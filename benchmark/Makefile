@@ -83,11 +83,11 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c: $(WASM2C_SRC_PATH)/src/templa
 
 #####################################
 
-../build_$(BUILD_TYPE_DIR)/libjpeg.a: test_bytes.h
+../build_$(BUILD_TYPE_DIR)/libjpeg.a:
 	cmake -S ../ -B ../build_$(BUILD_TYPE_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DWITH_SIMD=1 -DREQUIRE_SIMD=1
 	cd ../build_$(BUILD_TYPE_DIR) && make -j$(PARALLEL_COUNT)
 
-../build_nosimd_$(BUILD_TYPE_DIR)/libjpeg.a: test_bytes.h
+../build_nosimd_$(BUILD_TYPE_DIR)/libjpeg.a:
 	cmake -S ../ -B ../build_nosimd_$(BUILD_TYPE_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE_CONFIG) -DWITH_SIMD=0
 	cd ../build_nosimd_$(BUILD_TYPE_DIR) && make -j$(PARALLEL_COUNT)
 
@@ -145,6 +145,9 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c: $(WASM2C_SRC_PATH)/src/templa
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck: image_change_quality.c test_bytes.h  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_NOSIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1
+
+../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_segue: image_change_quality.c test_bytes.h  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
+	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_NOSIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1 -DWASM_RT_USE_SEGUE=1 -mfsgsbase
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_spectre: image_change_quality.c test_bytes.h  $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
 	$(CC) $(BUILD_TYPE_FLAGS) $(BUILD_BINARY_FLAGS) -o $@ $(WASM2C_SA_RUNTIME) $(REPO_PATH)/benchmark/wasm-rt-static-runner.c ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c $(WASM2C_NOSIMD_SA_BUILD_INCLUDES) $(RLBOX_INCLUDES) -DWASM_RT_MEMCHECK_BOUNDS_CHECK=1 -DWASM_RT_SPECTREMASK=1
@@ -329,6 +332,7 @@ build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_b
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_guardpage_segue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck
+build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_segue
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_spectre
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_trap_len
 build: ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasm2c_boundscheck_trap_neg1
@@ -420,27 +424,70 @@ test:
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_$(BUILD_TYPE_DIR) && echo -n "Stock NoSIMD " && ./image_change_quality
 	sleep 1
+	echo ""
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Guard pages " && wasmtime run --allow-precompiled ./image_change_quality_wasmtime_guardpage.cwasm
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=false --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck.cwasm
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks (nospectre) " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=false --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck.cwasm
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks spectre " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck_spectre.cwasm
-	sleep 1
+	echo ""
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages " && ./image_change_quality_wasm2c_guardpage
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages with segue " && ./image_change_quality_wasm2c_guardpage_segue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Guard pages segue " && ./image_change_quality_wasm2c_guardpage_segue
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks " && ./image_change_quality_wasm2c_boundscheck
 	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks segue " && ./image_change_quality_wasm2c_boundscheck_segue
+	sleep 1
+	echo ""
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per4gb " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write4per4gb " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb_shadowsegue
+	sleep 1
+	echo ""
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag (floatzone) " && ./image_change_quality_wasm2c_shadowbytestag_floatzone
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag (floatzone) shadowsegue " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_shadowsegue
+	sleep 1
+	echo ""
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c mask pdep " && ./image_change_quality_wasm2c_mask_pdep
+	sleep 1
+	echo ""
+	echo "Spectre protections tests"
+	echo "-------------------------"
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks spectre " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck_spectre.cwasm
+	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks spectre " && ./image_change_quality_wasm2c_boundscheck_spectre
+	sleep 1
+	echo ""
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb spectre " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_spectre
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb spectre " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_spectre
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb shadowsegue spectre " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue_spectre
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb shadowsegue spectre " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue_spectre
+	sleep 1
+
+tests_old:
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks asm " && ./image_change_quality_wasm2c_boundscheck_asm
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks asm spectre " && ./image_change_quality_wasm2c_boundscheck_asm_spectre
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks trap - Access len " && ./image_change_quality_wasm2c_boundscheck_trap_len
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks trap - Access -1 " && ./image_change_quality_wasm2c_boundscheck_trap_neg1
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks asm " && ./image_change_quality_wasm2c_boundscheck_asm
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks asm spectre " && ./image_change_quality_wasm2c_boundscheck_asm_spectre
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow page read " && ./image_change_quality_wasm2c_shadowpage_read
 	sleep 1
@@ -456,46 +503,6 @@ test:
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow page write first byte " && ./image_change_quality_wasm2c_shadowpage_firstbyte_write
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per64kb " && ./image_change_quality_wasm2c_shadowbytes_read1per64kb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per16mb " && ./image_change_quality_wasm2c_shadowbytes_read1per16mb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb spectre " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_spectre
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb spectre " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_spectre
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per64kb " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per16mb " && ./image_change_quality_wasm2c_shadowbytes_write1per16mb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per4gb " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write4per4gb " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per64kb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per16mb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per16mb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per4gb shadowsegue spectre " && ./image_change_quality_wasm2c_shadowbytes_read1per4gb_shadowsegue_spectre
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read4per4gb shadowsegue spectre " && ./image_change_quality_wasm2c_shadowbytes_read4per4gb_shadowsegue_spectre
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per16mb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per16mb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per4gb_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write4per4gb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write4per4gb_shadowsegue
-	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb segue " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue
@@ -506,19 +513,30 @@ test:
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c PreShadow bytes - read1per4gb segue shadowsegue spectre " && ./image_change_quality_wasm2c_preshadowbytes_read1per4gb_segue_shadowsegue_spectre
 	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per64kb " && ./image_change_quality_wasm2c_shadowbytes_read1per64kb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per16mb " && ./image_change_quality_wasm2c_shadowbytes_read1per16mb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per64kb " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per16mb " && ./image_change_quality_wasm2c_shadowbytes_write1per16mb
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per64kb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - read1per16mb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_read1per16mb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per64kb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per64kb_shadowsegue
+	sleep 1
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes - write1per16mb shadowsegue " && ./image_change_quality_wasm2c_shadowbytes_write1per16mb_shadowsegue
+	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c watch " && ./image_change_quality_wasm2c_watch
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c watch shadowsegue " && ./image_change_quality_wasm2c_watch_shadowsegue
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag " && ./image_change_quality_wasm2c_shadowbytestag_floatzone
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag (floatzone) virtpinned " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag shadowsegue " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_shadowsegue
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag (floatzone) virtpinned shadowsegue " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned_shadowsegue
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag virtpinned " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Shadow bytes tag virtpinned shadowsegue " && ./image_change_quality_wasm2c_shadowbytestag_floatzone_virtpinned_shadowsegue
-	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c mask pdep " && ./image_change_quality_wasm2c_mask_pdep
 
 clean:
 	rm -f test_out.jpeg
