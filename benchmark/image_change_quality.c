@@ -2,8 +2,34 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+
+#ifdef __wasm64__
+// Need to stub in a few things due to lack of wasi
+
+typedef struct FILE{
+  int dummy;
+} FILE;
+
+int printf(const char* fmt, ...) {
+return -1;
+}
+
+#define CLOCK_REALTIME 0
+#define clockid_t int
+
+struct timespec {
+  int64_t tv_sec;
+  long int tv_nsec;
+};
+
+int clock_gettime(clockid_t clockid, struct timespec *tp) {
+return -1;
+}
+
+#else
 #include <stdio.h>
 #include <time.h>
+#endif
 
 #include "jpeglib.h"
 
