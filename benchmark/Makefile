@@ -20,6 +20,7 @@ WASI_LD=$(WASI_SDK_PATH)/bin/wasm-ld
 WASI_CFLAGS=-I $(MKFILE_DIR)/wasmcompat
 WASI_LDFLAGS=-Wl,--export-all -Wl,--stack-first -Wl,-z,stack-size=1048576 -Wl,--no-entry -Wl,--import-memory -Wl,--import-table
 WASI_SA_LDFLAGS=-Wl,--stack-first -Wl,-z,stack-size=1048576
+WASMTIME=$(ROOT_PATH)/wasmtime/target/release/wasmtime
 
 RLBOX_WASM2C_PATH=$(ROOT_PATH)/rlbox_wasm2c_sandbox
 
@@ -334,13 +335,13 @@ $(WASM2C_SRC_PATH)/build_$(BUILD_TYPE_DIR)/wasm2c: $(WASM2C_SRC_PATH)/src/templa
 #####################################
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_guardpage.cwasm: image_change_quality.c test_bytes.h ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
-	wasmtime compile -o $@ ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm
+	$(WASMTIME) compile -o $@ ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_boundscheck.cwasm: image_change_quality.c test_bytes.h ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
-	wasmtime compile --cranelift-set enable_heap_access_spectre_mitigation=false --static-memory-guard-size 0 --dynamic-memory-guard-size 0 -o $@ ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm
+	$(WASMTIME) compile --cranelift-set enable_heap_access_spectre_mitigation=false --static-memory-guard-size 0 --dynamic-memory-guard-size 0 -o $@ ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm
 
 ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/image_change_quality_wasmtime_boundscheck_spectre.cwasm: image_change_quality.c test_bytes.h ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm.c
-	wasmtime compile --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 -o $@ ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm
+	$(WASMTIME) compile --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 -o $@ ../build_nosimd_wasm_sa_$(BUILD_TYPE_DIR)/libjpeg.wasm
 
 #####################################
 
@@ -496,9 +497,9 @@ test:
 	sleep 1
 
 tests_old:
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Guard pages " && wasmtime run --allow-precompiled ./image_change_quality_wasmtime_guardpage.cwasm
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Guard pages " && $(WASMTIME) run --allow-precompiled ./image_change_quality_wasmtime_guardpage.cwasm
 	sleep 1
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks (nospectre) " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=false --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck.cwasm
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks (nospectre) " && WASMTIME_NEW_CLI=0 $(WASMTIME) run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=false --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck.cwasm
 	sleep 1
 	echo ""
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks asm " && ./image_change_quality_wasm2c_boundscheck_asm
@@ -580,7 +581,7 @@ tests_old:
 	echo ""
 	echo "Spectre protections tests"
 	echo "-------------------------"
-	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks spectre " && wasmtime run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck_spectre.cwasm
+	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasmtime Bounds checks spectre " && $(WASMTIME) run --allow-precompiled --cranelift-set enable_heap_access_spectre_mitigation=true --static-memory-guard-size 0 --dynamic-memory-guard-size 0 ./image_change_quality_wasmtime_boundscheck_spectre.cwasm
 	sleep 1
 	cd $(REPO_PATH)/build_nosimd_wasm_sa_$(BUILD_TYPE_DIR) && echo -n "Wasm2c Bounds checks spectre " && ./image_change_quality_wasm2c_boundscheck_spectre
 	sleep 1
